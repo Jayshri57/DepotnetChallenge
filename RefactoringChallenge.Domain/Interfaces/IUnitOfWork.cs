@@ -6,6 +6,7 @@ namespace RefactoringChallenge.Domain.Interfaces
     {
         IOrderRepository Orders { get; }
         IProductRepository Products { get; }
+        IOrderDetailRepository OrderDetail { get; }
 
         int Complete();
     }

@@ -1,71 +1,47 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Mapster;
-using MapsterMapper;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using RefactoringChallenge.Domain.Interfaces;
 using RefactoringChallenge.Domain.Entities;
-using RefactoringChallenge.Repository;
+using System.Threading.Tasks;
+using System;
+using System.Collections.Generic;
+using Mapster;
+using System.Linq;
 
 namespace RefactoringChallenge.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
-    public class OrdersController : Controller
+    public class OrdersController : ControllerBase
     {
-        private readonly NorthwindDbContext _northwindDbContext;
-        private readonly IMapper _mapper;
-
-        public OrdersController(NorthwindDbContext northwindDbContext, IMapper mapper)
+        private readonly IUnitOfWork _unitOfWork;
+        public OrdersController(IUnitOfWork unitOfWork)
         {
-            _northwindDbContext = northwindDbContext;
-            _mapper = mapper;
+            _unitOfWork = unitOfWork;
+
         }
 
-        [HttpGet]
-        public IActionResult Get(int? skip = null, int? take = null)
-        {
-             var query = _northwindDbContext.Orders;
-           
-            if (skip != null)
-            { 
-                query.Skip(skip.Value);
-            }
-            if (take != null)
-            {
-                query.Take(take.Value);
-            }
-            var result = _mapper.From(query).ProjectToType<OrderResponse>().ToList();
-            return Json(result);
-        }
+        // GET: api/<Orders>
+        [HttpGet(nameof(GetOrders))]
+        public async Task<IActionResult> GetOrders() => Ok(await _unitOfWork.Orders.GetAll());
 
-
-        [HttpGet("{orderId}")]
-        public IActionResult GetById([FromRoute] int orderId)
-        {
-            var result = _mapper.From(_northwindDbContext.Orders).ProjectToType<OrderResponse>().FirstOrDefault(o => o.OrderId == orderId);
-
-            if (result == null)
-                return NotFound();
-
-            return Json(result);
-        }
+        [HttpGet(nameof(GetById))]
+        public async Task<IActionResult> GetById([FromQuery] int orderId) => Ok(await _unitOfWork.Orders.GetById(orderId));
 
         [HttpPost("[action]")]
         public IActionResult Create(
-            string customerId,
-            int? employeeId,
-            DateTime? requiredDate,
-            int? shipVia,
-            decimal? freight,
-            string shipName,
-            string shipAddress,
-            string shipCity,
-            string shipRegion,
-            string shipPostalCode,
-            string shipCountry,
-            IEnumerable<OrderDetailRequest> orderDetails
-            )
+           string customerId,
+           int? employeeId,
+           DateTime? requiredDate,
+           int? shipVia,
+           decimal? freight,
+           string shipName,
+           string shipAddress,
+           string shipCity,
+           string shipRegion,
+           string shipPostalCode,
+           string shipCountry,
+           IEnumerable<OrderDetailRequest> orderDetails
+           )
         {
             var newOrderDetails = new List<OrderDetail>();
             foreach (var orderDetail in orderDetails)
@@ -95,16 +71,20 @@ namespace RefactoringChallenge.Controllers
                 ShipCountry = shipCountry,
                 OrderDetails = newOrderDetails,
             };
-            _northwindDbContext.Orders.Add(newOrder);
-            _northwindDbContext.SaveChanges();
 
-            return Json(newOrder.Adapt<OrderResponse>());
+            var result = _unitOfWork.Orders.Add(newOrder);
+
+            _unitOfWork.Complete();
+
+            if (result != null) return Ok("Product Created");
+            else return BadRequest("Error in Creating the Product");
         }
 
         [HttpPost("{orderId}/[action]")]
         public IActionResult AddProductsToOrder([FromRoute] int orderId, IEnumerable<OrderDetailRequest> orderDetails)
         {
-            var order = _northwindDbContext.Orders.FirstOrDefault(o => o.OrderId == orderId);
+            var order = _unitOfWork.Orders.GetById(orderId);
+
             if (order == null)
                 return NotFound();
 
@@ -121,26 +101,109 @@ namespace RefactoringChallenge.Controllers
                 });
             }
 
-            _northwindDbContext.OrderDetails.AddRange(newOrderDetails);
-            _northwindDbContext.SaveChanges();
+            //_northwindDbContext.OrderDetails.AddRange(newOrderDetails);
+            //_northwindDbContext.SaveChanges();
 
-            return Json(newOrderDetails.Select(od => od.Adapt<OrderDetailResponse>()));
+            //return Json(newOrderDetails.Select(od => od.Adapt<OrderDetailResponse>()));
+
+            _unitOfWork.OrderDetail.Add(newOrderDetails);
+            _unitOfWork.Complete();
+
+            var result = (newOrderDetails.Select(od => od.Adapt<OrderDetailResponse>()));
+            if (result != null) return Ok("Product Created");
+            else return BadRequest("Error in Creating the Product");
         }
 
-        [HttpPost("{orderId}/[action]")]
-        public IActionResult Delete([FromRoute] int orderId)
-        {
-            var order = _northwindDbContext.Orders.FirstOrDefault(o => o.OrderId == orderId);
-            if (order == null)
-                return NotFound();
+        //[HttpPost("[action]")]
+        //public IActionResult Create(
+        //    string customerId,
+        //    int? employeeId,
+        //    DateTime? requiredDate,
+        //    int? shipVia,
+        //    decimal? freight,
+        //    string shipName,
+        //    string shipAddress,
+        //    string shipCity,
+        //    string shipRegion,
+        //    string shipPostalCode,
+        //    string shipCountry,
+        //    IEnumerable<OrderDetailRequest> orderDetails
+        //    )
+        //{
+        //    var newOrderDetails = new List<OrderDetail>();
+        //    foreach (var orderDetail in orderDetails)
+        //    {
+        //        newOrderDetails.Add(new OrderDetail
+        //        {
+        //            ProductId = orderDetail.ProductId,
+        //            Discount = orderDetail.Discount,
+        //            Quantity = orderDetail.Quantity,
+        //            UnitPrice = orderDetail.UnitPrice,
+        //        });
+        //    }
 
-            var orderDetails = _northwindDbContext.OrderDetails.Where(od => od.OrderId == orderId);
+        //    var newOrder = new Order
+        //    {
+        //        CustomerId = customerId,
+        //        EmployeeId = employeeId,
+        //        OrderDate = DateTime.Now,
+        //        RequiredDate = requiredDate,
+        //        ShipVia = shipVia,
+        //        Freight = freight,
+        //        ShipName = shipName,
+        //        ShipAddress = shipAddress,
+        //        ShipCity = shipCity,
+        //        ShipRegion = shipRegion,
+        //        ShipPostalCode = shipPostalCode,
+        //        ShipCountry = shipCountry,
+        //        OrderDetails = newOrderDetails,
+        //    };
+        //    _northwindDbContext.Orders.Add(newOrder);
+        //    _northwindDbContext.SaveChanges();
 
-            _northwindDbContext.OrderDetails.RemoveRange(orderDetails);
-            _northwindDbContext.Orders.Remove(order);
-            _northwindDbContext.SaveChanges();
+        //    return Json(newOrder.Adapt<OrderResponse>());
+        //}
 
-            return Ok();
-        }
+        //[HttpPost("{orderId}/[action]")]
+        //public IActionResult AddProductsToOrder([FromRoute] int orderId, IEnumerable<OrderDetailRequest> orderDetails)
+        //{
+        //    var order = _northwindDbContext.Orders.FirstOrDefault(o => o.OrderId == orderId);
+        //    if (order == null)
+        //        return NotFound();
+
+        //    var newOrderDetails = new List<OrderDetail>();
+        //    foreach (var orderDetail in orderDetails)
+        //    {
+        //        newOrderDetails.Add(new OrderDetail
+        //        {
+        //            OrderId = orderId,
+        //            ProductId = orderDetail.ProductId,
+        //            Discount = orderDetail.Discount,
+        //            Quantity = orderDetail.Quantity,
+        //            UnitPrice = orderDetail.UnitPrice,
+        //        });
+        //    }
+
+        //    _northwindDbContext.OrderDetails.AddRange(newOrderDetails);
+        //    _northwindDbContext.SaveChanges();
+
+        //    return Json(newOrderDetails.Select(od => od.Adapt<OrderDetailResponse>()));
+        //}
+
+        //[HttpPost("{orderId}/[action]")]
+        //public IActionResult Delete([FromRoute] int orderId)
+        //{
+        //    var order = _northwindDbContext.Orders.FirstOrDefault(o => o.OrderId == orderId);
+        //    if (order == null)
+        //        return NotFound();
+
+        //    var orderDetails = _northwindDbContext.OrderDetails.Where(od => od.OrderId == orderId);
+
+        //    _northwindDbContext.OrderDetails.RemoveRange(orderDetails);
+        //    _northwindDbContext.Orders.Remove(order);
+        //    _northwindDbContext.SaveChanges();
+
+        //    return Ok();
+        //}
     }
 }

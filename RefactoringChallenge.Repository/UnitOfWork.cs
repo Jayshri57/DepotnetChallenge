@@ -9,14 +9,18 @@ namespace RefactoringChallenge.Repository
         public IOrderRepository Orders { get; }
         public IProductRepository Products { get; }
 
+        public IOrderDetailRepository OrderDetail { get; }
+
         public UnitOfWork(NorthwindDbContext northwindDbContext,
             IOrderRepository orderRepository,
-            IProductRepository productRepository)
+            IProductRepository productRepository,
+            IOrderDetailRepository orderDetailRepository)
         {
             this._context = northwindDbContext;
 
             this.Orders = orderRepository;
             this.Products = productRepository;
+            this.OrderDetail = orderDetailRepository;
         }
 
         public int Complete()

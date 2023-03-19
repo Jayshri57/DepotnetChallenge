@@ -19,24 +19,25 @@ namespace RefactoringChallenge
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
+        public IConfiguration Configuration { get; }    
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
+            services.AddRepository();
 
-            services.AddSingleton(TypeAdapterConfig.GlobalSettings);
-            services.AddScoped<IMapper, ServiceMapper>();
+            // services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
+            //services.AddSingleton(TypeAdapterConfig.GlobalSettings);
+            //services.AddScoped<IMapper, ServiceMapper>();
 
-            services.AddControllers();
-
-            //services.AddSwaggerGen();
+            services.AddControllers();            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "RefactoringChallenge", Version = "v1" });
             });
         }
+
+        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

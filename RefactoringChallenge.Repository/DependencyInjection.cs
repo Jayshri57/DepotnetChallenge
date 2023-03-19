@@ -12,9 +12,11 @@ namespace RefactoringChallenge.Repository
             services.AddTransient<IProductRepository, ProductRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
-            services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
-
+            // services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
+            services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer("Server=.;Database=Northwind;Trusted_Connection=True;"));
+            
             return services;
         }
+       
     }
 }

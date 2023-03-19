@@ -6,6 +6,7 @@ namespace RefactoringChallenge.Domain.Interfaces
 {
     public interface IOrderRepository : IGenericRepository<Order>
     {
-        //Task<IEnumerable<Order>> GetOrdersByOrderName(string orderName);
+        Task<Order> GetById(int orderId);
+        void Delete(Task<Order> order);
     }
 }
