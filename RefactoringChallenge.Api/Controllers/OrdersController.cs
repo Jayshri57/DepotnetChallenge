@@ -30,152 +30,110 @@ namespace RefactoringChallenge.Controllers
             return Json(result);
         }
 
-        //[HttpGet(nameof(GetById))]
-        //public async Task<IActionResult> GetById([FromQuery] int orderId) => Ok(await _unitOfWork.Orders.GetById(orderId));
+        [HttpGet("{orderId}")]
+        public IActionResult GetById([FromRoute] int orderId)
+        {
+            var result = _orderManager.GetOrderResponse(orderId);
+            if (result == null)
+                return NotFound();
 
-        //[HttpPost("[action]")]
-        //public IActionResult Create(
-        //   string customerId,
-        //   int? employeeId,
-        //   DateTime? requiredDate,
-        //   int? shipVia,
-        //   decimal? freight,
-        //   string shipName,
-        //   string shipAddress,
-        //   string shipCity,
-        //   string shipRegion,
-        //   string shipPostalCode,
-        //   string shipCountry,
-        //   IEnumerable<OrderDetailRequest> orderDetails
-        //   )
-        //{
-        //    var newOrderDetails = new List<OrderDetail>();
-        //    foreach (var orderDetail in orderDetails)
-        //    {
-        //        newOrderDetails.Add(new OrderDetail
-        //        {
-        //            ProductId = orderDetail.ProductId,
-        //            Discount = orderDetail.Discount,
-        //            Quantity = orderDetail.Quantity,
-        //            UnitPrice = orderDetail.UnitPrice,
-        //        });
-        //    }
+            return Json(result);
+        }
 
-        //    var newOrder = new Order
-        //    {
-        //        CustomerId = customerId,
-        //        EmployeeId = employeeId,
-        //        OrderDate = DateTime.Now,
-        //        RequiredDate = requiredDate,
-        //        ShipVia = shipVia,
-        //        Freight = freight,
-        //        ShipName = shipName,
-        //        ShipAddress = shipAddress,
-        //        ShipCity = shipCity,
-        //        ShipRegion = shipRegion,
-        //        ShipPostalCode = shipPostalCode,
-        //        ShipCountry = shipCountry,
-        //        OrderDetails = newOrderDetails,
-        //    };
+        [HttpPost("[action]")]
+        public IActionResult Create(
+            string customerId,
+            int? employeeId,
+            DateTime? requiredDate,
+            int? shipVia,
+            decimal? freight,
+            string shipName,
+            string shipAddress,
+            string shipCity,
+            string shipRegion,
+            string shipPostalCode,
+            string shipCountry,
+            IEnumerable<OrderDetailRequest> orderDetails
+            )
+        {
+            var newOrderDetails = new List<OrderDetail>();
+            foreach (var orderDetail in orderDetails)
+            {
+                newOrderDetails.Add(new OrderDetail
+                {
+                    ProductId = orderDetail.ProductId,
+                    Discount = orderDetail.Discount,
+                    Quantity = orderDetail.Quantity,
+                    UnitPrice = orderDetail.UnitPrice,
+                });
+            }
 
-        //    var result = _unitOfWork.Orders.Add(newOrder);
+            var newOrder = new Order
+            {
+                CustomerId = customerId,
+                EmployeeId = employeeId,
+                OrderDate = DateTime.Now,
+                RequiredDate = requiredDate,
+                ShipVia = shipVia,
+                Freight = freight,
+                ShipName = shipName,
+                ShipAddress = shipAddress,
+                ShipCity = shipCity,
+                ShipRegion = shipRegion,
+                ShipPostalCode = shipPostalCode,
+                ShipCountry = shipCountry,
+                OrderDetails = newOrderDetails,
+            };
+            _orderManager.AddOrder(newOrder);
+            _orderManager.SaveChangesOrders();
 
-        //    _unitOfWork.Complete();
+            return Json(newOrder.Adapt<OrderResponse>());
+        }
 
-        //    if (result != null) return Ok("Product Created");
-        //    else return BadRequest("Error in Creating the Product");
-        //}      
+        [HttpPost("{orderId}/[action]")]
+        public IActionResult AddProductsToOrder([FromRoute] int orderId, IEnumerable<OrderDetailRequest> orderDetails)
+        {           
+            var order = _orderManager.GetOrderResponse(orderId);
+            if (order == null)
+                return NotFound();
 
-        //[HttpPost("[action]")]
-        //public IActionResult Create(
-        //    string customerId,
-        //    int? employeeId,
-        //    DateTime? requiredDate,
-        //    int? shipVia,
-        //    decimal? freight,
-        //    string shipName,
-        //    string shipAddress,
-        //    string shipCity,
-        //    string shipRegion,
-        //    string shipPostalCode,
-        //    string shipCountry,
-        //    IEnumerable<OrderDetailRequest> orderDetails
-        //    )
-        //{
-        //    var newOrderDetails = new List<OrderDetail>();
-        //    foreach (var orderDetail in orderDetails)
-        //    {
-        //        newOrderDetails.Add(new OrderDetail
-        //        {
-        //            ProductId = orderDetail.ProductId,
-        //            Discount = orderDetail.Discount,
-        //            Quantity = orderDetail.Quantity,
-        //            UnitPrice = orderDetail.UnitPrice,
-        //        });
-        //    }
+            var newOrderDetails = new List<OrderDetail>();
+            foreach (var orderDetail in orderDetails)
+            {
+                newOrderDetails.Add(new OrderDetail
+                {
+                    OrderId = orderId,
+                    ProductId = orderDetail.ProductId,
+                    Discount = orderDetail.Discount,
+                    Quantity = orderDetail.Quantity,
+                    UnitPrice = orderDetail.UnitPrice,
+                });
+            }
 
-        //    var newOrder = new Order
-        //    {
-        //        CustomerId = customerId,
-        //        EmployeeId = employeeId,
-        //        OrderDate = DateTime.Now,
-        //        RequiredDate = requiredDate,
-        //        ShipVia = shipVia,
-        //        Freight = freight,
-        //        ShipName = shipName,
-        //        ShipAddress = shipAddress,
-        //        ShipCity = shipCity,
-        //        ShipRegion = shipRegion,
-        //        ShipPostalCode = shipPostalCode,
-        //        ShipCountry = shipCountry,
-        //        OrderDetails = newOrderDetails,
-        //    };
-        //    _northwindDbContext.Orders.Add(newOrder);
-        //    _northwindDbContext.SaveChanges();
+            _orderManager.UpdateOrderDetails(newOrderDetails);
+            _orderManager.SaveChangesOrderDetails();
 
-        //    return Json(newOrder.Adapt<OrderResponse>());
-        //}
+            return Json(newOrderDetails.Select(od => od.Adapt<OrderDetailResponse>()));
+        }
 
-        //[HttpPost("{orderId}/[action]")]
-        //public IActionResult AddProductsToOrder([FromRoute] int orderId, IEnumerable<OrderDetailRequest> orderDetails)
-        //{
-        //    var order = _northwindDbContext.Orders.FirstOrDefault(o => o.OrderId == orderId);
-        //    if (order == null)
-        //        return NotFound();
+        [HttpPost("{orderId}/[action]")]
+        public IActionResult Delete([FromRoute] int orderId)
+        {
+            var order = _orderManager.GetOrder(orderId);
+            if (order == null)
+                return NotFound();
 
-        //    var newOrderDetails = new List<OrderDetail>();
-        //    foreach (var orderDetail in orderDetails)
-        //    {
-        //        newOrderDetails.Add(new OrderDetail
-        //        {
-        //            OrderId = orderId,
-        //            ProductId = orderDetail.ProductId,
-        //            Discount = orderDetail.Discount,
-        //            Quantity = orderDetail.Quantity,
-        //            UnitPrice = orderDetail.UnitPrice,
-        //        });
-        //    }
+            var orderDetails = _orderManager.GetOrderDetails(orderId);
+            if (orderDetails == null)
+                return NotFound();
 
-        //    _northwindDbContext.OrderDetails.AddRange(newOrderDetails);
-        //    _northwindDbContext.SaveChanges();
+            _orderManager.DeleteOrderDetails(orderDetails);
+            _orderManager.SaveChangesOrderDetails();
+            _orderManager.DeleteOrder(order);
+            _orderManager.SaveChangesOrders();
 
-        //    return Json(newOrderDetails.Select(od => od.Adapt<OrderDetailResponse>()));
-        //}
+            return Ok();
+        }
 
-        //[HttpPost("{orderId}/[action]")]
-        //public IActionResult Delete([FromRoute] int orderId)
-        //{
-        //    var order = _northwindDbContext.Orders.FirstOrDefault(o => o.OrderId == orderId);
-        //    if (order == null)
-        //        return NotFound();
-
-        //    var orderDetails = _northwindDbContext.OrderDetails.Where(od => od.OrderId == orderId);
-
-        //    _northwindDbContext.OrderDetails.RemoveRange(orderDetails);
-        //    _northwindDbContext.Orders.Remove(order);
-        //    _northwindDbContext.SaveChanges();
-
-        //    return Ok();
-        //}
     }
 }

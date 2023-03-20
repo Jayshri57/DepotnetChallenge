@@ -2,6 +2,7 @@
 
 using Microsoft.EntityFrameworkCore;
 using RefactoringChallenge.Domain.Entities;
+using System;
 
 namespace RefactoringChallenge.Repository
 {
@@ -129,7 +130,8 @@ namespace RefactoringChallenge.Repository
                 entity.HasOne(d => d.ReportsToNavigation)
                     .WithMany(p => p.InverseReportsToNavigation)
                     .HasForeignKey(d => d.ReportsTo)
-                    .HasConstraintName("FK_Employees_Employees");
+                    .HasConstraintName("FK_Employees_Employees")
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Order>(entity =>
@@ -184,17 +186,20 @@ namespace RefactoringChallenge.Repository
                 entity.HasOne(d => d.Customer)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.CustomerId)
-                    .HasConstraintName("FK_Orders_Customers");
+                    .HasConstraintName("FK_Orders_Customers")
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.Employee)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.EmployeeId)
-                    .HasConstraintName("FK_Orders_Employees");
+                    .HasConstraintName("FK_Orders_Employees")
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.ShipViaNavigation)
                     .WithMany(p => p.Orders)
                     .HasForeignKey(d => d.ShipVia)
-                    .HasConstraintName("FK_Orders_Shippers");
+                    .HasConstraintName("FK_Orders_Shippers")
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<OrderDetail>(entity =>
@@ -224,13 +229,15 @@ namespace RefactoringChallenge.Repository
                     .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.OrderId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Order_Details_Orders");
+                    .HasConstraintName("FK_Order_Details_Orders")
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.Product)
                     .WithMany(p => p.OrderDetails)
                     .HasForeignKey(d => d.ProductId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Order_Details_Products");
+                    .HasConstraintName("FK_Order_Details_Products")
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Product>(entity =>
@@ -270,12 +277,14 @@ namespace RefactoringChallenge.Repository
                 entity.HasOne(d => d.Category)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.CategoryId)
-                    .HasConstraintName("FK_Products_Categories");
+                    .HasConstraintName("FK_Products_Categories")
+                    .OnDelete(DeleteBehavior.Cascade);
 
                 entity.HasOne(d => d.Supplier)
                     .WithMany(p => p.Products)
                     .HasForeignKey(d => d.SupplierId)
-                    .HasConstraintName("FK_Products_Suppliers");
+                    .HasConstraintName("FK_Products_Suppliers")
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             modelBuilder.Entity<Shipper>(entity =>

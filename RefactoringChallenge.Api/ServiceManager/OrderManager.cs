@@ -22,6 +22,49 @@ namespace RefactoringChallenge.ServiceManager
             return _unitOfWork.Orders.GetAll(skip, take);
         }
 
-        
+        public OrderResponse GetOrderResponse(int orderId)
+        {
+            return _unitOfWork.Orders.GetOrderResponse(orderId);
+        }
+
+        public Order AddOrder(Order order)
+        {
+            return _unitOfWork.Orders.AddOrder(order);
+        }
+        public void SaveChangesOrders()
+        {
+            _unitOfWork.Orders.SaveChangesOrders();
+            // _unitOfWork.OrderDetail.SaveChangesOrders();
+        }
+
+        public void SaveChangesOrderDetails()
+        {            
+             _unitOfWork.OrderDetail.SaveChangesOrderDetails();
+        }
+
+        public void UpdateOrderDetails(List<OrderDetail> orderDetails)
+        {
+             _unitOfWork.OrderDetail.UpdateOrderDetails(orderDetails);
+        }
+
+        public OrderDetail GetOrderDetails(int orderId)
+        {
+            return _unitOfWork.OrderDetail.GetOrderDetails(orderId);
+        }
+
+        public void DeleteOrderDetails(OrderDetail orderDetails)
+        {
+            _unitOfWork.OrderDetail.DeleteOrderDetails(orderDetails);
+        }
+
+        public Order GetOrder(int orderId)
+        {
+            return _unitOfWork.Orders.GetOrder(orderId);
+        }
+
+        public void DeleteOrder(Order order)
+        {
+            _unitOfWork.Orders.DeleteOrder(order);
+        }
     }
 }

@@ -6,10 +6,13 @@ using System.Threading.Tasks;
 namespace RefactoringChallenge.Domain.Interfaces
 {
     public interface IOrderRepository 
-    {
-        Task<Order> GetById(int orderId);
-        void Delete(Task<Order> order);
+    {        
         List<OrderResponse> GetAll(int? skip = null, int? take = null);
-        
+        OrderResponse GetOrderResponse(int orderId);
+        Order AddOrder(Order order);
+        void SaveChangesOrders();
+        Order GetOrder(int orderId);
+        void DeleteOrder(Order order);
+
     }
 }
