@@ -9,7 +9,7 @@ namespace RefactoringChallenge.Repository
         public static IServiceCollection AddRepository(this IServiceCollection services)
         {
             services.AddTransient<IOrderRepository, OrderRepository>();
-            services.AddTransient<IProductRepository, ProductRepository>();
+            services.AddTransient<IOrderDetailRepository, OrderDetailsRepository>();
             services.AddTransient<IUnitOfWork, UnitOfWork>();
 
             // services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));

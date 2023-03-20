@@ -7,19 +7,15 @@ namespace RefactoringChallenge.Repository
     {
         private readonly NorthwindDbContext _context;
         public IOrderRepository Orders { get; }
-        public IProductRepository Products { get; }
-
         public IOrderDetailRepository OrderDetail { get; }
 
         public UnitOfWork(NorthwindDbContext northwindDbContext,
             IOrderRepository orderRepository,
-            IProductRepository productRepository,
             IOrderDetailRepository orderDetailRepository)
         {
             this._context = northwindDbContext;
 
             this.Orders = orderRepository;
-            this.Products = productRepository;
             this.OrderDetail = orderDetailRepository;
         }
 

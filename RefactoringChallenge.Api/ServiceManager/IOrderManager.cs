@@ -1,15 +1,14 @@
 ﻿using RefactoringChallenge.Controllers;
 using RefactoringChallenge.Domain.Entities;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
-namespace RefactoringChallenge.Domain.Interfaces
+namespace RefactoringChallenge.ServiceManager
 {
-    public interface IOrderRepository 
+    public interface IOrderManager
     {
-        Task<Order> GetById(int orderId);
-        void Delete(Task<Order> order);
         List<OrderResponse> GetAll(int? skip = null, int? take = null);
-        
     }
 }

@@ -4,15 +4,42 @@ using RefactoringChallenge.Domain.Interfaces;
 using RefactoringChallenge.Domain.Entities;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
+using Mapster;
+using MapsterMapper;
+using RefactoringChallenge.Controllers;
 
 namespace RefactoringChallenge.Repository
 {
-    public class OrderRepository : GenericRepository<Order>, IOrderRepository, IOrderDetailRepository
+    public class OrderRepository : IOrderRepository
     {
-        public OrderRepository(NorthwindDbContext context) : base(context)
-        {
+        protected readonly NorthwindDbContext _context;
 
+        private readonly IMapper _mapper;
+        public OrderRepository(NorthwindDbContext context, IMapper mapper) 
+        {
+            _context = context;
+            _mapper = mapper;
         }
+
+        //public IQueryable<OrderResponse> GetAll(int? skip = null, int? take = null)
+        //{
+        //    // var query = _northwindDbContext.Orders;
+        //    var query = _context.Orders;
+
+
+        //    if (skip != null)
+        //    {
+        //        query.Skip(skip.Value);
+        //    }
+        //    if (take != null)
+        //    {
+        //        query.Take(take.Value);
+        //    }
+        //    var result = _mapper.From(query).ProjectToType<OrderResponse>().ToList();
+        //    return (IQueryable<OrderResponse>)result;
+        //}
+
 
         public async Task<Order> GetById(int orderId)
         {          
@@ -24,34 +51,24 @@ namespace RefactoringChallenge.Repository
             _context.Set<Order>().RemoveRange();
         }
 
-        public void Delete(bool orderDetails)
+        public List<OrderResponse> GetAll(int? skip = null, int? take = null)
         {
-            throw new NotImplementedException();
+            var query = _context.Orders;
+
+
+            if (skip != null)
+            {
+                query.Skip(skip.Value);
+            }
+            if (take != null)
+            {
+                query.Take(take.Value);
+            }
+            var result = _mapper.From(query).ProjectToType<OrderResponse>().ToList();
+            //return (IQueryable<OrderResponse>)result;
+            return result;
         }
 
-        Task<OrderDetail> IGenericRepository<OrderDetail>.Get(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<IEnumerable<OrderDetail>> IGenericRepository<OrderDetail>.GetAll()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task Add(OrderDetail entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Delete(OrderDetail entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Update(OrderDetail entity)
-        {
-            throw new NotImplementedException();
-        }
+        
     }
 }

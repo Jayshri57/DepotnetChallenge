@@ -5,11 +5,10 @@ using System.Text;
 
 namespace RefactoringChallenge.Domain.Interfaces
 {
-    public interface IOrderDetailRepository : IGenericRepository<OrderDetail>
-    {
+    public interface IOrderDetailRepository 
+    {       
+        //void Delete(bool orderDetails);
+       
         //void Add(List<OrderDetail> newOrderDetails);
-        void Delete(bool orderDetails);
-        void AddAsync(List<OrderDetail> newOrderDetails);
-        void Add(List<OrderDetail> newOrderDetails);
     }
 }

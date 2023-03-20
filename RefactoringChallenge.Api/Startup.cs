@@ -9,6 +9,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using RefactoringChallenge.Domain.Entities;
 using RefactoringChallenge.Repository;
+using RefactoringChallenge.ServiceManager;
 
 namespace RefactoringChallenge
 {
@@ -27,8 +28,9 @@ namespace RefactoringChallenge
             services.AddRepository();
 
             // services.AddDbContext<NorthwindDbContext>(options => options.UseSqlServer("name=ConnectionStrings:DefaultConnection"));
-            //services.AddSingleton(TypeAdapterConfig.GlobalSettings);
-            //services.AddScoped<IMapper, ServiceMapper>();
+            services.AddSingleton(TypeAdapterConfig.GlobalSettings);
+            services.AddScoped<IMapper, ServiceMapper>();
+            services.AddScoped<IOrderManager, OrderManager>();
 
             services.AddControllers();            
             services.AddSwaggerGen(c =>
