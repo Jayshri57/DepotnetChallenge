@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace RefactoringChallenge.Controllers
+namespace RefactoringChallenge.Domain.Entities
 {
     public class OrderResponse
     {

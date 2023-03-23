@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using RefactoringChallenge.Domain.Interfaces;
 using RefactoringChallenge.Domain.Entities;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Mapster;
 using MapsterMapper;
-using RefactoringChallenge.Controllers;
+
 
 namespace RefactoringChallenge.Repository
 {

@@ -1,9 +1,5 @@
-﻿using RefactoringChallenge.Controllers;
-using RefactoringChallenge.Domain.Entities;
-using System;
+﻿using RefactoringChallenge.Domain.Entities;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace RefactoringChallenge.Domain.Interfaces
 {
