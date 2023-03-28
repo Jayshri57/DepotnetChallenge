@@ -29,6 +29,5 @@ namespace RefactoringChallenge.Domain.Entities
         public virtual Employee Employee { get; set; }
         public virtual Shipper ShipViaNavigation { get; set; }
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
-        public int Id { get; set; }
     }
 }

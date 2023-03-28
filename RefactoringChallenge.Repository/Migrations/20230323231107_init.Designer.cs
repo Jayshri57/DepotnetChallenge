@@ -5,14 +5,13 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using RefactoringChallenge.Domain.Entities;
 using RefactoringChallenge.Repository;
 
-namespace RefactoringChallenge.Migrations
+namespace RefactoringChallenge.Repository.Migrations
 {
     [DbContext(typeof(NorthwindDbContext))]
-    [Migration("20230316200622_Init")]
-    partial class Init
+    [Migration("20230323231107_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -23,7 +22,7 @@ namespace RefactoringChallenge.Migrations
                 .HasAnnotation("ProductVersion", "5.0.10")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Category", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Category", b =>
                 {
                     b.Property<int>("CategoryId")
                         .ValueGeneratedOnAdd()
@@ -49,7 +48,7 @@ namespace RefactoringChallenge.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Customer", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Customer", b =>
                 {
                     b.Property<string>("CustomerId")
                         .HasMaxLength(5)
@@ -111,7 +110,7 @@ namespace RefactoringChallenge.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Employee", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Employee", b =>
                 {
                     b.Property<int>("EmployeeId")
                         .ValueGeneratedOnAdd()
@@ -196,12 +195,11 @@ namespace RefactoringChallenge.Migrations
                     b.ToTable("Employees");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Order", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Order", b =>
                 {
-                    b.Property<int>("OrderId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
-                        .HasColumnName("OrderID")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("CustomerId")
@@ -221,6 +219,10 @@ namespace RefactoringChallenge.Migrations
 
                     b.Property<DateTime?>("OrderDate")
                         .HasColumnType("datetime");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int")
+                        .HasColumnName("OrderID");
 
                     b.Property<DateTime?>("RequiredDate")
                         .HasColumnType("datetime");
@@ -255,7 +257,7 @@ namespace RefactoringChallenge.Migrations
                     b.Property<DateTime?>("ShippedDate")
                         .HasColumnType("datetime");
 
-                    b.HasKey("OrderId");
+                    b.HasKey("Id");
 
                     b.HasIndex(new[] { "CustomerId" }, "CustomerID");
 
@@ -276,7 +278,7 @@ namespace RefactoringChallenge.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.OrderDetail", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.OrderDetail", b =>
                 {
                     b.Property<int>("OrderId")
                         .HasColumnType("int")
@@ -311,7 +313,7 @@ namespace RefactoringChallenge.Migrations
                     b.ToTable("Order Details");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Product", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Product", b =>
                 {
                     b.Property<int>("ProductId")
                         .ValueGeneratedOnAdd()
@@ -374,7 +376,7 @@ namespace RefactoringChallenge.Migrations
                     b.ToTable("Products");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Shipper", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Shipper", b =>
                 {
                     b.Property<int>("ShipperId")
                         .ValueGeneratedOnAdd()
@@ -396,7 +398,7 @@ namespace RefactoringChallenge.Migrations
                     b.ToTable("Shippers");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Supplier", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Supplier", b =>
                 {
                     b.Property<int>("SupplierId")
                         .ValueGeneratedOnAdd()
@@ -459,9 +461,9 @@ namespace RefactoringChallenge.Migrations
                     b.ToTable("Suppliers");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Employee", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Employee", b =>
                 {
-                    b.HasOne("RefactoringChallenge.Entities.Employee", "ReportsToNavigation")
+                    b.HasOne("RefactoringChallenge.Domain.Entities.Employee", "ReportsToNavigation")
                         .WithMany("InverseReportsToNavigation")
                         .HasForeignKey("ReportsTo")
                         .HasConstraintName("FK_Employees_Employees");
@@ -469,19 +471,19 @@ namespace RefactoringChallenge.Migrations
                     b.Navigation("ReportsToNavigation");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Order", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Order", b =>
                 {
-                    b.HasOne("RefactoringChallenge.Entities.Customer", "Customer")
+                    b.HasOne("RefactoringChallenge.Domain.Entities.Customer", "Customer")
                         .WithMany("Orders")
                         .HasForeignKey("CustomerId")
                         .HasConstraintName("FK_Orders_Customers");
 
-                    b.HasOne("RefactoringChallenge.Entities.Employee", "Employee")
+                    b.HasOne("RefactoringChallenge.Domain.Entities.Employee", "Employee")
                         .WithMany("Orders")
                         .HasForeignKey("EmployeeId")
                         .HasConstraintName("FK_Orders_Employees");
 
-                    b.HasOne("RefactoringChallenge.Entities.Shipper", "ShipViaNavigation")
+                    b.HasOne("RefactoringChallenge.Domain.Entities.Shipper", "ShipViaNavigation")
                         .WithMany("Orders")
                         .HasForeignKey("ShipVia")
                         .HasConstraintName("FK_Orders_Shippers");
@@ -493,15 +495,15 @@ namespace RefactoringChallenge.Migrations
                     b.Navigation("ShipViaNavigation");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.OrderDetail", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.OrderDetail", b =>
                 {
-                    b.HasOne("RefactoringChallenge.Entities.Order", "Order")
+                    b.HasOne("RefactoringChallenge.Domain.Entities.Order", "Order")
                         .WithMany("OrderDetails")
                         .HasForeignKey("OrderId")
                         .HasConstraintName("FK_Order_Details_Orders")
                         .IsRequired();
 
-                    b.HasOne("RefactoringChallenge.Entities.Product", "Product")
+                    b.HasOne("RefactoringChallenge.Domain.Entities.Product", "Product")
                         .WithMany("OrderDetails")
                         .HasForeignKey("ProductId")
                         .HasConstraintName("FK_Order_Details_Products")
@@ -512,14 +514,14 @@ namespace RefactoringChallenge.Migrations
                     b.Navigation("Product");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Product", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Product", b =>
                 {
-                    b.HasOne("RefactoringChallenge.Entities.Category", "Category")
+                    b.HasOne("RefactoringChallenge.Domain.Entities.Category", "Category")
                         .WithMany("Products")
                         .HasForeignKey("CategoryId")
                         .HasConstraintName("FK_Products_Categories");
 
-                    b.HasOne("RefactoringChallenge.Entities.Supplier", "Supplier")
+                    b.HasOne("RefactoringChallenge.Domain.Entities.Supplier", "Supplier")
                         .WithMany("Products")
                         .HasForeignKey("SupplierId")
                         .HasConstraintName("FK_Products_Suppliers");
@@ -529,39 +531,39 @@ namespace RefactoringChallenge.Migrations
                     b.Navigation("Supplier");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Category", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Category", b =>
                 {
                     b.Navigation("Products");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Customer", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Customer", b =>
                 {
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Employee", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Employee", b =>
                 {
                     b.Navigation("InverseReportsToNavigation");
 
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Order", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Order", b =>
                 {
                     b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Product", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Product", b =>
                 {
                     b.Navigation("OrderDetails");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Shipper", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Shipper", b =>
                 {
                     b.Navigation("Orders");
                 });
 
-            modelBuilder.Entity("RefactoringChallenge.Entities.Supplier", b =>
+            modelBuilder.Entity("RefactoringChallenge.Domain.Entities.Supplier", b =>
                 {
                     b.Navigation("Products");
                 });
