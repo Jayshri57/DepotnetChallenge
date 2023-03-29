@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefactoringChallenge.Domain
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefactoringChallenge.Repository", "RefactoringChallenge.Repository\RefactoringChallenge.Repository.csproj", "{C7953205-B82A-4B8D-B79C-76CE5F29668F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefactoringChallenge.Tests", "RefactoringChallenge.Tests\RefactoringChallenge.Tests.csproj", "{3FE2D65C-7561-4038-92AA-62CB30C6D242}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefactoringChallengeTests", "RefactoringChallengeTests\RefactoringChallengeTests.csproj", "{D0CB871C-FA9D-4608-913C-203C2B7F6F49}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{C7953205-B82A-4B8D-B79C-76CE5F29668F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C7953205-B82A-4B8D-B79C-76CE5F29668F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C7953205-B82A-4B8D-B79C-76CE5F29668F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3FE2D65C-7561-4038-92AA-62CB30C6D242}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3FE2D65C-7561-4038-92AA-62CB30C6D242}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3FE2D65C-7561-4038-92AA-62CB30C6D242}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3FE2D65C-7561-4038-92AA-62CB30C6D242}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0CB871C-FA9D-4608-913C-203C2B7F6F49}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0CB871C-FA9D-4608-913C-203C2B7F6F49}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0CB871C-FA9D-4608-913C-203C2B7F6F49}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0CB871C-FA9D-4608-913C-203C2B7F6F49}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

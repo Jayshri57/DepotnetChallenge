@@ -1,51 +1,118 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using NUnit.Framework;
 using Moq;
-using NUnit.Framework;
 using RefactoringChallenge.Controllers;
-using RefactoringChallenge.Domain;
-using RefactoringChallenge.Domain.Entities;
-using RefactoringChallenge.Domain.Interfaces;
 using RefactoringChallenge.ServiceManager;
-using System;
+using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using RefactoringChallenge.Domain.Entities;
 
-namespace RefactoringChallenge.UnitTests.Controllers
+
+[TestFixture]
+public class OrdersControllerTests
 {
-    [TestFixture]
-    public class OrdersControllerTests
+    private Mock<IOrderManager> _mockOrderManager;
+    private OrdersController _controller;
+
+    [SetUp]
+    public void Setup()
     {
-        private Mock<IOrderManager> _orderManagerMock;
-        private OrdersController _ordersController;
+        _mockOrderManager = new Mock<IOrderManager>();
+        _controller = new OrdersController(_mockOrderManager.Object);
+    }
 
-        [SetUp]
-        public void Setup()
+    [Test]
+    public void Get_ReturnsJsonResult()
+    {
+        // Arrange
+        _mockOrderManager.Setup(x => x.GetAll(null, null)).Returns(new List<OrderResponse>());
+
+        // Act
+        var result = _controller.Get();
+
+        // Assert
+        Assert.IsInstanceOf<JsonResult>(result);
+    }
+
+    [Test]
+    public void GetById_WithValidId_ReturnsJsonResult()
+    {
+        // Arrange
+        int orderId = 1;
+        _mockOrderManager.Setup(x => x.GetOrderResponse(orderId)).Returns(new OrderResponse());
+
+        // Act
+        var result = _controller.GetById(orderId);
+
+        // Assert
+        Assert.IsInstanceOf<JsonResult>(result);
+    }
+
+    [Test]
+    public void GetById_WithInvalidId_ReturnsNotFoundResult()
+    {
+        // Arrange
+        int orderId = 1;
+        _mockOrderManager.Setup(x => x.GetOrderResponse(orderId)).Returns((OrderResponse)null);
+
+        // Act
+        var result = _controller.GetById(orderId);
+
+        // Assert
+        Assert.IsInstanceOf<NotFoundResult>(result);
+    }
+
+    [Test]
+    public void AddProductsToOrder_WithValidData_ReturnsJsonResult()
+    {
+        // Arrange
+        int orderId = 1;
+        IEnumerable<OrderDetailRequest> orderDetails = new List<OrderDetailRequest>()
         {
-            _orderManagerMock = new Mock<IOrderManager>();
-            var unitOfWorkMock = new Mock<IUnitOfWork>();
-            unitOfWorkMock.Setup(uow => uow.Orders).Returns((IOrderRepository)_orderManagerMock.Object);
-            unitOfWorkMock.Setup(uow => uow.OrderDetail).Returns((IOrderDetailRepository)_orderManagerMock.Object);
-            _ordersController = new OrdersController(_orderManagerMock.Object);
-        }
+            new OrderDetailRequest() { ProductId = 1, Discount = (float)0.1m, Quantity = 2, UnitPrice = 10 }
+        };
+        _mockOrderManager.Setup(x => x.GetOrderResponse(orderId)).Returns(new OrderResponse());
 
-        [Test]
-        public void Get_ReturnsOkObjectResult_WhenOrdersExist()
+        // Act
+        var result = _controller.AddProductsToOrder(orderId, orderDetails);
+
+        // Assert
+        Assert.IsInstanceOf<JsonResult>(result);
+    }
+
+    [Test]
+    public void AddProductsToOrder_WithInvalidData_ReturnsNotFoundResult()
+    {
+        // Arrange
+        int orderId = 1;
+        IEnumerable<OrderDetailRequest> orderDetails = new List<OrderDetailRequest>()
         {
-            // Arrange
-            var orders = new List<OrderResponse> { new OrderResponse { OrderId = 1, CustomerId = "ABC", EmployeeId = 1 } };
-            _orderManagerMock.Setup(om => om.GetAll(null, null)).Returns(orders);
+            new OrderDetailRequest() { ProductId = 1, Discount = (float)0.1m, Quantity = 2, UnitPrice = 10 }
+        };
+        _mockOrderManager.Setup(x => x.GetOrderResponse(orderId)).Returns((OrderResponse)null);
 
-            // Act
-            var result = _ordersController.Get() as OkObjectResult;
+        // Act
+        var result = _controller.AddProductsToOrder(orderId, orderDetails);
 
-            // Assert
-            Assert.IsNotNull(result);
-            Assert.AreEqual(200, result.StatusCode);
-            var resultValue = result.Value as IEnumerable<OrderResponse>;
-            Assert.IsNotNull(resultValue);
-            CollectionAssert.AreEqual(orders, resultValue);
-        }
+        // Assert
+        Assert.IsInstanceOf<NotFoundResult>(result);
+    }
+
+    [Test]
+    public void Delete_WithValidId_ReturnsOkResult()
+    {
+        // Arrange
+        int orderId = 1;
+        Order order = new Order() { OrderId = orderId };
+        OrderDetail orderDetail = new OrderDetail() { OrderId = orderId };
+        _mockOrderManager.Setup(x => x.GetOrder(orderId)).Returns(order);
+        _mockOrderManager.Setup(x => x.GetOrderDetails(orderId)).Returns(orderDetail);
+
+        // Act
+        var result = _controller.Delete(orderId);
+
+        // Assert
+        Assert.IsInstanceOf<OkResult>(result);
     }
 }
 
+    

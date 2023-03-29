@@ -16,7 +16,7 @@ namespace RefactoringChallenge.Controllers
     [ApiController]
     public class OrdersController : Controller
     {
-        IOrderManager _orderManager;
+        readonly IOrderManager _orderManager;
         public OrdersController(IOrderManager service)
         {
             _orderManager = service;
@@ -25,19 +25,33 @@ namespace RefactoringChallenge.Controllers
         // GET: api/<Orders>
         [HttpGet(nameof(Get))]
         public IActionResult Get(int? skip = null, int? take = null)
-        {
-           var result = _orderManager.GetAll(skip , take);
-            return Json(result);
+        {          
+            try
+            {
+                var result = _orderManager.GetAll(skip, take);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet("{orderId}")]
         public IActionResult GetById([FromRoute] int orderId)
         {
-            var result = _orderManager.GetOrderResponse(orderId);
-            if (result == null)
-                return NotFound();
+            try
+            {
+                var result = _orderManager.GetOrderResponse(orderId);
+                if (result == null)
+                    return NotFound();
 
-            return Json(result);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost("[action]")]
@@ -56,83 +70,105 @@ namespace RefactoringChallenge.Controllers
             IEnumerable<OrderDetailRequest> orderDetails
             )
         {
-            var newOrderDetails = new List<OrderDetail>();
-            foreach (var orderDetail in orderDetails)
+            try
             {
-                newOrderDetails.Add(new OrderDetail
+                var newOrderDetails = new List<OrderDetail>();
+                foreach (var orderDetail in orderDetails)
                 {
-                    ProductId = orderDetail.ProductId,
-                    Discount = orderDetail.Discount,
-                    Quantity = orderDetail.Quantity,
-                    UnitPrice = orderDetail.UnitPrice,
-                });
+                    newOrderDetails.Add(new OrderDetail
+                    {
+                        ProductId = orderDetail.ProductId,
+                        Discount = orderDetail.Discount,
+                        Quantity = orderDetail.Quantity,
+                        UnitPrice = orderDetail.UnitPrice,
+                    });
+                }
+
+                var newOrder = new Order
+                {
+                    CustomerId = customerId,
+                    EmployeeId = employeeId,
+                    OrderDate = DateTime.Now,
+                    RequiredDate = requiredDate,
+                    ShipVia = shipVia,
+                    Freight = freight,
+                    ShipName = shipName,
+                    ShipAddress = shipAddress,
+                    ShipCity = shipCity,
+                    ShipRegion = shipRegion,
+                    ShipPostalCode = shipPostalCode,
+                    ShipCountry = shipCountry,
+                    OrderDetails = newOrderDetails,
+                };
+                _orderManager.AddOrder(newOrder);
+                _orderManager.SaveChangesOrders();
+
+                return Json(newOrder.Adapt<OrderResponse>());
             }
-
-            var newOrder = new Order
+            catch (Exception ex)
             {
-                CustomerId = customerId,
-                EmployeeId = employeeId,
-                OrderDate = DateTime.Now,
-                RequiredDate = requiredDate,
-                ShipVia = shipVia,
-                Freight = freight,
-                ShipName = shipName,
-                ShipAddress = shipAddress,
-                ShipCity = shipCity,
-                ShipRegion = shipRegion,
-                ShipPostalCode = shipPostalCode,
-                ShipCountry = shipCountry,
-                OrderDetails = newOrderDetails,
-            };
-            _orderManager.AddOrder(newOrder);
-            _orderManager.SaveChangesOrders();
-
-            return Json(newOrder.Adapt<OrderResponse>());
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost("{orderId}/[action]")]
         public IActionResult AddProductsToOrder([FromRoute] int orderId, IEnumerable<OrderDetailRequest> orderDetails)
-        {           
-            var order = _orderManager.GetOrderResponse(orderId);
-            if (order == null)
-                return NotFound();
-
-            var newOrderDetails = new List<OrderDetail>();
-            foreach (var orderDetail in orderDetails)
+        {
+            try
             {
-                newOrderDetails.Add(new OrderDetail
+                var order = _orderManager.GetOrderResponse(orderId);
+                if (order == null)
+                    return NotFound();
+
+                var newOrderDetails = new List<OrderDetail>();
+                foreach (var orderDetail in orderDetails)
                 {
-                    OrderId = orderId,
-                    ProductId = orderDetail.ProductId,
-                    Discount = orderDetail.Discount,
-                    Quantity = orderDetail.Quantity,
-                    UnitPrice = orderDetail.UnitPrice,
-                });
+                    newOrderDetails.Add(new OrderDetail
+                    {
+                        OrderId = orderId,
+                        ProductId = orderDetail.ProductId,
+                        Discount = orderDetail.Discount,
+                        Quantity = orderDetail.Quantity,
+                        UnitPrice = orderDetail.UnitPrice,
+                    });
+                }
+
+                _orderManager.UpdateOrderDetails(newOrderDetails);
+                _orderManager.SaveChangesOrderDetails();
+
+                return Json(newOrderDetails.Select(od => od.Adapt<OrderDetailResponse>()));
             }
-
-            _orderManager.UpdateOrderDetails(newOrderDetails);
-            _orderManager.SaveChangesOrderDetails();
-
-            return Json(newOrderDetails.Select(od => od.Adapt<OrderDetailResponse>()));
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost("{orderId}/[action]")]
         public IActionResult Delete([FromRoute] int orderId)
         {
-            var order = _orderManager.GetOrder(orderId);
-            if (order == null)
-                return NotFound();
+            try
+            {
+                var order = _orderManager.GetOrder(orderId);
+                if (order == null)
+                    return NotFound();
 
-            var orderDetails = _orderManager.GetOrderDetails(orderId);
-            if (orderDetails == null)
-                return NotFound();
+                var orderDetails = _orderManager.GetOrderDetails(orderId);
+                if (orderDetails == null)
+                    return NotFound();
 
-            _orderManager.DeleteOrderDetails(orderDetails);
-            _orderManager.SaveChangesOrderDetails();
-            _orderManager.DeleteOrder(order);
-            _orderManager.SaveChangesOrders();
+                _orderManager.DeleteOrderDetails(orderDetails);
+                _orderManager.SaveChangesOrderDetails();
+                _orderManager.DeleteOrder(order);
+                _orderManager.SaveChangesOrders();
 
-            return Ok();
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
     }
