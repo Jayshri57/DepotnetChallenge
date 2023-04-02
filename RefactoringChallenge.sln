@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.31727.386
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefactoringChallenge", "RefactoringChallenge.Api\RefactoringChallenge.csproj", "{4A5B07A9-D97E-4E4E-AEA6-4B83F70181AA}"
 EndProject
@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefactoringChallenge.Domain
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefactoringChallenge.Repository", "RefactoringChallenge.Repository\RefactoringChallenge.Repository.csproj", "{C7953205-B82A-4B8D-B79C-76CE5F29668F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RefactoringChallengeTests", "RefactoringChallengeTests\RefactoringChallengeTests.csproj", "{D0CB871C-FA9D-4608-913C-203C2B7F6F49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RefactoringChallengeTests", "RefactoringChallengeTests\RefactoringChallengeTests.csproj", "{D0CB871C-FA9D-4608-913C-203C2B7F6F49}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{0C15BECB-FA4E-478D-968C-8491BAD6DA93}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{D0CB871C-FA9D-4608-913C-203C2B7F6F49}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D0CB871C-FA9D-4608-913C-203C2B7F6F49}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D0CB871C-FA9D-4608-913C-203C2B7F6F49}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C15BECB-FA4E-478D-968C-8491BAD6DA93}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C15BECB-FA4E-478D-968C-8491BAD6DA93}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C15BECB-FA4E-478D-968C-8491BAD6DA93}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C15BECB-FA4E-478D-968C-8491BAD6DA93}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
