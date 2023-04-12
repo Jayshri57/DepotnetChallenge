@@ -1,14 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RefactoringChallenge.Domain.Interfaces;
 using RefactoringChallenge.Domain.Entities;
-using System.Threading.Tasks;
 using System;
 using System.Collections.Generic;
 using Mapster;
 using System.Linq;
-using MapsterMapper;
-using RefactoringChallenge.Repository;
 using RefactoringChallenge.ServiceManager;
+using RefactoringChallenge.Exceptions;
+using Microsoft.Extensions.Logging;
 
 namespace RefactoringChallenge.Controllers
 {
@@ -17,6 +15,7 @@ namespace RefactoringChallenge.Controllers
     public class OrdersController : Controller
     {
         readonly IOrderManager _orderManager;
+        private ILogger<OrdersController> _logger;
         public OrdersController(IOrderManager service)
         {
             _orderManager = service;
@@ -35,23 +34,22 @@ namespace RefactoringChallenge.Controllers
             {
                 return StatusCode(500, ex.Message);
             }
+
+
         }
 
         [HttpGet("{orderId}")]
         public IActionResult GetById([FromRoute] int orderId)
-        {
-            try
+        {            
+            _logger.LogInformation($"Fetch order with ID: {orderId} from the database");
+            var order = _orderManager.GetOrderResponse(orderId);
+            if (order.OrderDetails == null)
             {
-                var result = _orderManager.GetOrderResponse(orderId);
-                if (result == null)
-                    return NotFound();
+                throw new NotFoundException($"Order ID {orderId} not found.");
 
-                return Json(result);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            _logger.LogInformation($"Returning order with ID: {order.OrderDetails}.");
+            return (IActionResult)order;
         }
 
         [HttpPost("[action]")]
