@@ -10,6 +10,9 @@ using Microsoft.Extensions.Logging;
 
 namespace RefactoringChallenge.Controllers
 {
+    /// <summary>
+    /// Controller class for Orders
+    /// </summary>
     [Route("api/[controller]")]
     [ApiController]
     public class OrdersController : Controller
@@ -21,6 +24,12 @@ namespace RefactoringChallenge.Controllers
             _orderManager = service;
         }
 
+        /// <summary>
+        /// Get list of all Orders
+        /// </summary>
+        /// <param name="skip"></param>
+        /// <param name="take"></param>
+        /// <returns></returns>
         // GET: api/<Orders>
         [HttpGet(nameof(Get))]
         public IActionResult Get(int? skip = null, int? take = null)
@@ -38,6 +47,13 @@ namespace RefactoringChallenge.Controllers
 
         }
 
+        /// <summary>  
+        /// Get a Order  
+        /// </summary>  
+        /// <returns></returns>  
+        /// <remarks>  
+        /// Get a order by given order id   
+        /// </remarks> 
         [HttpGet("{orderId}")]
         public IActionResult GetById([FromRoute] int orderId)
         {            
